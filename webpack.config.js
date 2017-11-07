@@ -17,7 +17,8 @@ module.exports = {
     // sw: './src/sw',
   },
   output: {
-    filename: '[name].min.js',
+    filename: '[name].[hash:8].js',
+    // publicPath: './',
     path: path.resolve(__dirname, 'dist'),
   },
   module: {
@@ -43,6 +44,43 @@ module.exports = {
             'transform-object-rest-spread'
           ],
         },
+      },
+      {
+        test: /\.tsx?$/,
+        include: [
+          path.join(__dirname, 'src'),
+        ],
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: [
+                ['env', {
+                  modules: 'commonjs',
+                  targets: {
+                    browsers: ['>1%', 'last 5 versions', 'safari >= 7']
+                  }
+                }],
+              ],
+              plugins: [
+                ['transform-react-jsx', { 'pragma': 'h' }],
+                ['transform-runtime', {
+                  'helpers': false,
+                  'polyfill': true,
+                  'regenerator': true,
+                  'moduleName': 'babel-runtime',
+                }],
+                'transform-object-rest-spread',
+              ],
+            },
+          },
+          {
+            loader: 'awesome-typescript-loader',
+            options: {
+              transpileOnly: true,
+            },
+          },
+        ],
       },
       {
         test: /\.css$/,
@@ -95,14 +133,15 @@ module.exports = {
       path.resolve(__dirname, 'src'),
     ],
     alias: {
-      components: './components',
-      utils: './utils',
+      components: path.resolve('./src/components'),
+      utils: path.resolve('./src/utils'),
     },
-    extensions: ['.js', '.jsx', '.json'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Ghoul - Chat',
+      title: 'Ghoul - Boilerplate',
+      // publicPath: './',
       template: path.join(__dirname, 'public/index.html'),
     }),
     new webpack.HotModuleReplacementPlugin(),
